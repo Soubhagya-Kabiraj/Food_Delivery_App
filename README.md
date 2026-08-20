@@ -1,5 +1,7 @@
 <img width="1676" height="912" alt="Screenshot 2026-08-03 121430" src="https://github.com/user-attachments/assets/4dc7825d-b558-44d7-9374-5840acf89ef0" />
 
+---
+
 # 🍔 CraveX — Premium Food Delivery Web Application
 
 [![Django Version](https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
