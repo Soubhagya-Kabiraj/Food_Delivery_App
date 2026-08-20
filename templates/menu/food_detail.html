@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ item.name }} - CraveX Details{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Breadcrumb navigation -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-muted text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'menu' %}" class="text-muted text-decoration-none">Menu</a></li>
+                <li class="breadcrumb-item text-danger active" aria-current="page">{{ item.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="detail-card mb-5">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6">
+                    <div class="position-relative">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="detail-img">
+                        {% else %}
+                        <img src="https://via.placeholder.com/600x450/12151d/e50914?text={{ item.name|urlencode }}" alt="{{ item.name }}" class="detail-img">
+                        {% endif %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-black bg-opacity-75 text-warning border border-warning px-3 py-2 fs-6 rounded-pill">
+                            <i class="fa-solid fa-star me-1"></i> {{ item.rating }} Rating
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <span class="badge bg-danger bg-opacity-20 text-white border border-danger rounded-pill px-3 py-2 mb-2">
+                        {{ item.category.name|upper }}
+                    </span>
+                    <h1 class="text-white brand-font display-6 mb-3">{{ item.name }}</h1>
+                    
+                    <h2 class="text-danger fw-bold mb-4 display-6">₹{{ item.price }}</h2>
+
+                    <p class="text-light fs-5 lead mb-4">{{ item.description }}</p>
+
+                    {% if ingredients_list %}
+                    <div class="mb-4">
+                        <h6 class="text-white text-uppercase tracking-wider fw-bold mb-2"><i class="fa-solid fa-list-check me-2 text-danger"></i> Key Ingredients</h6>
+                        <div>
+                            {% for ing in ingredients_list %}
+                            <span class="ingredient-chip"><i class="fa-solid fa-check me-1 text-danger"></i> {{ ing }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <hr class="border-secondary my-4">
+
+                    {% if item.availability %}
+                    <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div>
+                                <label class="text-white small d-block mb-1">Select Quantity</label>
+                                <div class="quantity-control">
+                                    <button type="button" class="qty-btn-minus"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="number" name="quantity" value="1" min="1" max="20" readonly>
+                                    <button type="button" class="qty-btn-plus"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="flex-grow-1 pt-3">
+                                {% if user.is_authenticated %}
+                                <button type="submit" class="btn btn-cravex btn-lg w-100 py-3">
+                                    <i class="fa-solid fa-cart-shopping me-2"></i> Add To Cart
+                                </button>
+                                {% else %}
+                                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-cravex btn-lg w-100 py-3 text-center">
+                                    <i class="fa-solid fa-right-to-bracket me-2"></i> Log In to Order
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert border border-warning bg-warning bg-opacity-10 text-warning font-monospace fw-bold">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> Currently Unavailable
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Premium Items -->
+        {% if related_items %}
+        <div class="mt-5">
+            <h3 class="text-white brand-font mb-4">Pairs Perfectly With</h3>
+            <div class="row g-4">
+                {% for rel in related_items %}
+                <div class="col-lg-3 col-md-6">
+                    <div class="food-card">
+                        <div class="food-card-img-wrap" style="height: 160px;">
+                            {% if rel.image %}
+                            <img src="{{ rel.image.url }}" alt="{{ rel.name }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/400x250/12151d/e50914?text={{ rel.name|urlencode }}" alt="{{ rel.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="food-card-body p-3">
+                            <h6 class="food-card-title fs-6 mb-1">{{ rel.name }}</h6>
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                <span class="fw-bold text-white">₹{{ rel.price }}</span>
+                                <a href="{% url 'food_detail' rel.id %}" class="btn btn-cravex-outline btn-sm py-1 px-2">View</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

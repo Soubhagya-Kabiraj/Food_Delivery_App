@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - CraveX Express Delivery{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-white brand-font mb-4"><i class="fa-solid fa-credit-card text-danger me-2"></i> Express Checkout</h1>
+
+        <div class="row g-4">
+            <!-- Checkout Form -->
+            <div class="col-lg-7">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg">
+                    <h4 class="text-white brand-font mb-3"><i class="fa-solid fa-truck-ramp-box text-danger me-2"></i> Delivery Information</h4>
+                    
+                    <form action="{% url 'checkout' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Customer Full Name</label>
+                            <input type="text" name="full_name" class="form-control custom-input" value="{{ user.get_full_name|default:user.username }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Contact Phone Number</label>
+                            <input type="text" name="phone_number" class="form-control custom-input" value="{{ profile.phone_number|default:'' }}" placeholder="+1 (555) 000-1234" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Delivery Street Address</label>
+                            <textarea name="delivery_address" class="form-control custom-input" rows="3" placeholder="Enter complete home or office delivery address..." required>{{ profile.address|default:'' }}</textarea>
+                        </div>
+
+                        <h4 class="text-white brand-font mb-3"><i class="fa-solid fa-wallet text-danger me-2"></i> Payment Method</h4>
+                        <div class="p-3 border border-danger border-opacity-50 rounded-3 bg-danger bg-opacity-10 mb-4 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-money-bill-wave text-danger fs-3"></i>
+                                <div>
+                                    <h6 class="text-white mb-0 fw-bold">Cash / Card on Express Delivery</h6>
+                                    <small class="text-muted">Pay securely when your hot order arrives at your door.</small>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-circle-check text-danger fs-4"></i>
+                        </div>
+
+                        <button type="submit" class="btn btn-cravex btn-lg w-100 py-3">
+                            Confirm & Place Order <i class="fa-solid fa-check-circle ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Review Side Panel -->
+            <div class="col-lg-5">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg">
+                    <h4 class="text-white brand-font mb-3">Order Items ({{ cart_items|length }})</h4>
+
+                    <div class="mb-3" style="max-height: 300px; overflow-y: auto;">
+                        {% for item in cart_items %}
+                        <div class="d-flex align-items-center justify-content-between py-2 border-bottom border-secondary">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="badge bg-secondary rounded-circle">{{ item.quantity }}x</span>
+                                <div>
+                                    <h6 class="text-white mb-0 small fw-bold">{{ item.food_item.name }}</h6>
+                                    <small class="text-muted">₹{{ item.food_item.price }} each</small>
+                                </div>
+                            </div>
+                            <span class="text-white fw-bold">₹{{ item.total_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white">Subtotal</span>
+                        <span class="text-white fw-bold">₹{{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white">Delivery Fee</span>
+                        <span class="text-white fw-bold">₹{{ delivery_fee|floatformat:2 }}</span>
+                    </div>
+
+                    <hr class="border-secondary my-3">
+
+                    <div class="d-flex justify-content-between mb-2 fs-5">
+                        <span class="text-white fw-bold">Grand Total</span>
+                        <span class="text-danger fw-bold fs-3">₹{{ grand_total|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

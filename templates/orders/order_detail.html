@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #CRX-{{ order.id }} Tracking - CraveX{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <a href="{% url 'order_history' %}" class="text-white text-decoration-none small"><i
+                        class="fa-solid fa-arrow-left me-1"></i> Back to Order History</a>
+                <h1 class="text-white brand-font mb-0 mt-1">Live Order Status Tracking</h1>
+            </div>
+            <div class="text-end">
+                <span class="text-white small">ORDER ID</span>
+                <h4 class="text-danger font-monospace mb-0">#CRX-{{ order.id }}</h4>
+            </div>
+        </div>
+
+        <!-- Order Tracker Progress Bar Card -->
+        <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 p-md-5 mb-5 shadow-lg">
+            <div class="text-center mb-4">
+                <span class="text-white small text-uppercase">Current Status</span>
+                <h3 class="text-white fw-bold mt-1">
+                    {% if order.status == 'Pending' %}
+                    <i class="fa-solid fa-hourglass-start text-warning me-2"></i> Order Received & Pending
+                    {% elif order.status == 'Preparing' %}
+                    <i class="fa-solid fa-fire-burner text-info me-2"></i> Master Chefs are Preparing Your Order
+                    {% elif order.status == 'Out for Delivery' %}
+                    <i class="fa-solid fa-motorcycle text-primary me-2 text-glow"></i> Express Driver is On the Way!
+                    {% else %}
+                    <i class="fa-solid fa-circle-check text-success me-2"></i> Delivered & Enjoyed!
+                    {% endif %}
+                </h3>
+            </div>
+
+            <!-- Custom Tracker Progression Bar -->
+            <div class="position-relative my-4 px-md-5">
+                <div class="progress bg-black bg-opacity-50" style="height: 6px;">
+                    <div class="progress-bar bg-danger shadow-lg" role="progressbar"
+                        style="width: {{ progress_percent }}%;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between position-relative" style="margin-top: -24px;">
+                    <!-- Step 1: Pending -->
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg border border-secondary {% if current_step_index >= 0 %}bg-danger text-white border-danger{% else %}bg-dark text-muted{% endif %}"
+                            style="width: 42px; height: 42px;">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                        <div
+                            class="small mt-2 {% if current_step_index >= 0 %}text-white fw-bold{% else %}text-muted{% endif %}">
+                            Pending</div>
+                    </div>
+
+                    <!-- Step 2: Preparing -->
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg border border-secondary {% if current_step_index >= 1 %}bg-danger text-white border-danger{% else %}bg-dark text-muted{% endif %}"
+                            style="width: 42px; height: 42px;">
+                            <i class="fa-solid fa-kitchen-set"></i>
+                        </div>
+                        <div
+                            class="small mt-2 {% if current_step_index >= 1 %}text-white fw-bold{% else %}text-muted{% endif %}">
+                            Preparing</div>
+                    </div>
+
+                    <!-- Step 3: Out for Delivery -->
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg border border-secondary {% if current_step_index >= 2 %}bg-danger text-white border-danger{% else %}bg-dark text-muted{% endif %}"
+                            style="width: 42px; height: 42px;">
+                            <i class="fa-solid fa-person-biking"></i>
+                        </div>
+                        <div
+                            class="small mt-2 {% if current_step_index >= 2 %}text-white fw-bold{% else %}text-muted{% endif %}">
+                            Out for Delivery</div>
+                    </div>
+
+                    <!-- Step 4: Delivered -->
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg border border-secondary {% if current_step_index >= 3 %}bg-success text-white border-success{% else %}bg-dark text-muted{% endif %}"
+                            style="width: 42px; height: 42px;">
+                            <i class="fa-solid fa-house-chimney-check"></i>
+                        </div>
+                        <div
+                            class="small mt-2 {% if current_step_index >= 3 %}text-success fw-bold{% else %}text-muted{% endif %}">
+                            Delivered</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Items breakdown -->
+            <div class="col-lg-7">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg">
+                    <h4 class="text-white brand-font mb-3"><i class="fa-solid fa-utensils text-danger me-2"></i> Ordered
+                        Food Items</h4>
+                    <div class="table-responsive">
+                        <table class="table table-dark align-middle mb-0">
+                            <thead class="text-muted border-secondary">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td class="fw-bold">{{ item.food_item.name|default:"Deleted Item" }}</td>
+                                    <td>₹{{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td class="text-end text-danger fw-bold">₹{{ item.subtotal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery & Details info -->
+            <div class="col-lg-5">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg">
+                    <h4 class="text-white brand-font mb-3"><i class="fa-solid fa-location-dot text-danger me-2"></i>
+                        Delivery Summary</h4>
+
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="text-white small me-2">DELIVERY ADDRESS:</span>
+                            <p class="text-white mb-0 fw-semibold">{{ order.delivery_address }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="text-white small me-2">PHONE NUMBER:</span>
+                            <p class="text-white mb-0 fw-semibold">{{ order.phone_number }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="text-white small me-2">DATE CREATED:</span>
+                            <p class="text-white mb-0">{{ order.created_at|date:"F d, Y - h:i A" }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary my-3">
+
+                    <div class="d-flex justify-content-between fs-5">
+                        <span class="text-white fw-bold">Total Paid</span>
+                        <span class="text-danger fw-bold fs-4">₹{{ order.total_amount }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

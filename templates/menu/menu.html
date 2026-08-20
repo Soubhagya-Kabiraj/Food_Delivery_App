@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menu - CraveX Premium Collection{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-danger bg-opacity-20 text-white border border-danger border-opacity-20 rounded-pill px-3 py-2 mb-2 font-monospace small">
+                EXCLUSIVE SELECTION
+            </span>
+            <h1 class="text-white brand-font display-5">Our Signature Menu</h1>
+            <p class="text-white col-lg-6 mx-auto">Explore our exclusive lineup of costly, high-quality crispy chicken, gourmet burgers, artisan pizzas, sides, and premium beverages.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <form action="{% url 'menu' %}" method="GET" class="d-flex gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="q" value="{{ search_query }}" class="form-control custom-input" placeholder="Search Crispy Chicken, Burger, Pizza...">
+                    </div>
+                    {% if search_query %}
+                    <a href="{% url 'menu' %}" class="btn btn-outline-secondary d-flex align-items-center" title="Reset Search"><i class="fa-solid fa-xmark"></i> Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Food Grid -->
+        <div class="row g-4 mt-2">
+            {% for item in items %}
+            <div class="col-lg-4 col-md-6">
+                <div class="food-card">
+                    <div class="food-card-img-wrap">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/400x300/12151d/e50914?text={{ item.name|urlencode }}" alt="{{ item.name }}">
+                        {% endif %}
+                        <div class="food-card-badge">
+                            <i class="fa-solid fa-star me-1 text-warning"></i>{{ item.rating }}
+                        </div>
+                    </div>
+                    <div class="food-card-body">
+                        <span class="text-danger small fw-bold text-uppercase mb-1">{{ item.category.name }}</span>
+                        <h5 class="food-card-title">{{ item.name }}</h5>
+                        <p class="food-card-desc">{{ item.description }}</p>
+                        <div class="food-card-footer">
+                            <div class="food-price">₹{{ item.price }}</div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'food_detail' item.id %}" class="btn btn-cravex-outline btn-sm">Details</a>
+                                {% if user.is_authenticated %}
+                                <form action="{% url 'add_to_cart' item.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-cravex btn-sm">
+                                        <i class="fa-solid fa-cart-plus me-1"></i> Add
+                                    </button>
+                                </form>
+                                {% else %}
+                                <a href="{% url 'login' %}?next={% url 'food_detail' item.id %}" class="btn btn-cravex btn-sm">
+                                    <i class="fa-solid fa-cart-plus me-1"></i> Add
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fa-solid fa-utensils fs-1 text-muted mb-3 d-block"></i>
+                <h4 class="text-white">No food items found matching your criteria</h4>
+                <p class="text-muted">Try resetting your search filters or exploring another category.</p>
+                <a href="{% url 'menu' %}" class="btn btn-cravex mt-2">View All Menu Items</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

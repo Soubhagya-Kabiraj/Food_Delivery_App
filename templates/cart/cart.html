@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Cart - CraveX{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-white brand-font mb-4"><i class="fa-solid fa-cart-shopping text-danger me-2"></i> Your Luxury Cart</h1>
+
+        {% if cart_items %}
+        <div class="row g-4">
+            <!-- Cart Items List -->
+            <div class="col-lg-8">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-3 shadow-lg">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0">
+                            <thead class="border-secondary text-muted">
+                                <tr>
+                                    <th scope="col" style="min-width: 200px;">Food Item</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col" class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.food_item.image %}
+                                            <img src="{{ item.food_item.image.url }}" alt="{{ item.food_item.name }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                            <img src="https://via.placeholder.com/60x60/12151d/e50914?text=Food" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'food_detail' item.food_item.id %}" class="text-white text-decoration-none fw-bold d-block">{{ item.food_item.name }}</a>
+                                                <small class="text-muted">{{ item.food_item.category.name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="fw-semibold">₹{{ item.food_item.price }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <form action="{% url 'update_cart_quantity' item.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="decrease">
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm px-2 py-1"><i class="fa-solid fa-minus"></i></button>
+                                            </form>
+                                            <span class="fw-bold px-2">{{ item.quantity }}</span>
+                                            <form action="{% url 'update_cart_quantity' item.id %}" method="POST" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="increase">
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm px-2 py-1"><i class="fa-solid fa-plus"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold text-danger">₹{{ item.total_price }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm border-0" title="Remove Item">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{% url 'menu' %}" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left me-1"></i> Continue Shopping</a>
+                </div>
+            </div>
+
+            <!-- Order Summary Card -->
+            <div class="col-lg-4">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg sticky-top" style="top: 90px;">
+                    <h4 class="text-white brand-font mb-4">Order Summary</h4>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white">Subtotal</span>
+                        <span class="text-white fw-bold">₹{{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-white">Express Delivery Fee</span>
+                        <span class="text-white fw-bold">₹{{ delivery_fee|floatformat:2 }}</span>
+                    </div>
+
+                    <hr class="border-secondary my-3">
+
+                    <div class="d-flex justify-content-between mb-4 fs-5">
+                        <span class="text-white fw-bold">Total</span>
+                        <span class="text-danger fw-bold display-6 fs-4">₹{{ grand_total|floatformat:2 }}</span>
+                    </div>
+
+                    <a href="{% url 'checkout' %}" class="btn btn-cravex btn-lg w-100 py-3">
+                        Proceed to Checkout <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+
+                    <div class="mt-3 text-center">
+                        <small class="text-white"><i class="fa-solid fa-shield-halved me-1 text-danger"></i> Guaranteed Express & Fresh Delivery</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="fs-1 text-muted mb-3"><i class="fa-solid fa-cart-flatbed"></i></div>
+            <h3 class="text-white brand-font">Your cart is currently empty</h3>
+            <p class="text-muted">Looks like you haven't added any of our delicious items yet.</p>
+            <a href="{% url 'menu' %}" class="btn btn-cravex btn-lg mt-3">Explore Menu Now</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

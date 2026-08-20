@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account - CraveX{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 p-md-5 shadow-lg">
+                    <div class="text-center mb-4">
+                        <h2 class="text-white brand-font mb-1"><i class="fa-solid fa-user-plus text-danger me-2"></i> Join CraveX</h2>
+                        <p class="text-muted small">Create an account to order exclusive gourmet meals fast</p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                        <div class="alert bg-danger bg-opacity-20 border border-danger border-opacity-30 text-white small mb-3">
+                            {% for error in form.non_field_errors %}
+                            <div><i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> {{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Username *</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Email Address *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Password *</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Confirm Password *</label>
+                                {{ form.confirm_password }}
+                                {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Default Delivery Address</label>
+                            {{ form.address }}
+                        </div>
+
+                        <button type="submit" class="btn btn-cravex btn-lg w-100 py-3 mb-3">
+                            Register Account <i class="fa-solid fa-check-circle ms-2"></i>
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3 pt-3 border-top border-secondary">
+                        <p class="text-muted small mb-0">Already have an account? <a href="{% url 'login' %}" class="text-danger fw-bold text-decoration-none">Sign In Here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

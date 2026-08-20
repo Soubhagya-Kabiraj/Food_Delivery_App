@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - CraveX{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-white brand-font mb-4"><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i> Your Order
+            History</h1>
+
+        {% if orders %}
+        <div class="row g-4">
+            {% for order in orders %}
+            <div class="col-12">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-3">
+                            <span class="text-white small">ORDER ID</span>
+                            <h5 class="text-white mb-0 font-monospace">#CRX-{{ order.id }}</h5>
+                            <small class="text-muted"><i class="fa-solid fa-calendar me-1"></i> {{
+                                order.created_at|date:"M d, Y - h:i A" }}</small>
+                        </div>
+
+                        <div class="col-md-3">
+                            <span class="text-white small">DELIVERY TO</span>
+                            <p class="text-white mb-0 text-truncate small" style="max-width: 250px;">{{
+                                order.delivery_address }}</p>
+                            <small class="text-muted"><i class="fa-solid fa-phone me-1"></i> {{ order.phone_number
+                                }}</small>
+                        </div>
+
+                        <div class="col-md-2 text-md-center">
+                            <span class="text-white small d-block">TOTAL</span>
+                            <span class="text-danger fw-bold fs-5">₹{{ order.total_amount }}</span>
+                        </div>
+
+                        <div class="col-md-2 text-md-center">
+                            <span class="text-white small d-block mb-1">STATUS</span>
+
+                            {% if order.status == 'Pending' %}
+                            <span
+                                class="badge bg-warning bg-opacity-15 text-white border border-warning border-opacity-50 px-3 py-2 rounded-pill">
+                                <i class="fa-solid fa-clock me-1"></i> Pending
+                            </span>
+
+                            {% elif order.status == 'Preparing' %}
+                            <span
+                                class="badge bg-info bg-opacity-15 text-info border border-info border-opacity-50 px-3 py-2 rounded-pill">
+                                <i class="fa-solid fa-fire-burner me-1"></i> Preparing
+                            </span>
+
+                            {% elif order.status == 'Out for Delivery' %}
+                            <span
+                                class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-50 px-3 py-2 rounded-pill">
+                                <i class="fa-solid fa-motorcycle me-1"></i> Out for Delivery
+                            </span>
+
+                            {% else %}
+                            <span
+                                class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill">
+                                <i class="fa-solid fa-circle-check me-1"></i> Delivered
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-2 text-md-end">
+                            <a href="{% url 'order_detail' order.id %}"
+                                class="btn btn-cravex-outline btn-sm py-2 px-3 w-100">
+                                Track Order <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="fs-1 text-danger mb-3"><i class="fa-solid fa-box-open"></i></div>
+            <h3 class="text-white brand-font">No Orders Found</h3>
+            <p class="text-white">You haven't placed any orders yet. Try our delicious signature menu!</p>
+            <a href="{% url 'menu' %}" class="btn btn-cravex btn-lg mt-3">Order Now</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

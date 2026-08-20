@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Profile - CraveX{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Profile Details Form -->
+            <div class="col-lg-7">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 p-md-5 shadow-lg">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="rounded-circle bg-danger bg-opacity-20 text-danger p-3 fs-2">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-white brand-font mb-0">{{ user.username }}'s Profile</h2>
+                            <small class="text-muted">Member since {{ user.date_joined|date:"M Y" }}</small>
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Default Delivery Address</label>
+                            {{ form.address }}
+                        </div>
+
+                        <button type="submit" class="btn btn-cravex py-2 px-4">
+                            Update Profile Info <i class="fa-solid fa-floppy-disk ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Activity Panel -->
+            <div class="col-lg-5">
+                <div class="card bg-dark bg-opacity-75 border-secondary rounded-4 p-4 shadow-lg mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="text-white brand-font mb-0">Recent Orders</h4>
+                        <a href="{% url 'order_history' %}" class="text-danger small text-decoration-none fw-bold">View All</a>
+                    </div>
+
+                    {% if recent_orders %}
+                    <div class="list-group list-group-flush bg-transparent">
+                        {% for order in recent_orders %}
+                        <div class="list-group-item bg-transparent text-white border-secondary px-0 py-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="fw-bold d-block font-monospace">#CRX-{{ order.id }}</span>
+                                <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-danger fw-bold d-block">₹{{ order.total_amount }}</span>
+                                <a href="{% url 'order_detail' order.id %}" class="badge bg-secondary text-decoration-none">Track</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">No recent orders found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

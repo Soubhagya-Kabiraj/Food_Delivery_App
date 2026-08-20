@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CraveX - Premium Taste, Delivered Fast{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CraveX CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Professional Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top navbar-cravex">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fa-solid fa-drumstick-bite me-2 text-danger"></i>CRAVE<span>X</span>
+            </a>
+            
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCraveX">
+                <i class="fa-solid fa-bars fs-4 text-white"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarCraveX">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fa-solid fa-house me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'menu' %}active{% endif %}" href="{% url 'menu' %}">
+                            <i class="fa-solid fa-utensils me-1"></i> Menu
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'order_history' %}active{% endif %}" href="{% url 'order_history' %}">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+                            <i class="fa-solid fa-user me-1"></i> Profile
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'cart_detail' %}" class="btn btn-cravex-outline position-relative px-3 py-2">
+                        <i class="fa-solid fa-cart-shopping me-1 text-danger"></i> Cart
+                        {% if cart_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge badge-cart">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill border-0 bg-dark py-2 px-3 text-capitalize" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user-circle me-1 text-danger"></i> {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-id-card me-2"></i> My Account</a></li>
+                            <li><a class="dropdown-item" href="{% url 'order_history' %}"><i class="fa-solid fa-bag-shopping me-2"></i> Order History</a></li>
+                            {% if user.is_staff %}
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item text-warning" href="/admin/" target="_blank"><i class="fa-solid fa-user-shield me-2"></i> Admin Panel</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-cravex-outline py-2 px-3">Log In</a>
+                    <a href="{% url 'register' %}" class="btn btn-cravex py-2 px-4">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-dismissible fade show border-0 shadow-lg text-white" 
+                     style="background: {% if message.tags == 'success' %}rgba(40, 167, 69, 0.9){% elif message.tags == 'error' or message.tags == 'danger' %}rgba(220, 53, 69, 0.9){% elif message.tags == 'warning' %}rgba(255, 193, 7, 0.85){% else %}rgba(23, 162, 184, 0.9){% endif %}; backdrop-filter: blur(10px);" role="alert">
+                    <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' or message.tags == 'danger' %}fa-circle-exclamation{% elif message.tags == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Premium Footer -->
+    <footer class="footer-cravex">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <h4 class="brand-font text-white mb-3"><i class="fa-solid fa-drumstick-bite text-danger me-2"></i>CRAVE<span class="text-danger">X</span></h4>
+                    <p class="text-white small">CraveX brings you hand-crafted, high-quality crispy chicken, gourmet burgers, exclusive pizzas, and luxury beverages straight to your doorstep.</p>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled small" style="color: gray;">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none text-muted">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'menu' %}" class="text-decoration-none text-muted">Full Menu</a></li>
+                        <li class="mb-2"><a href="{% url 'cart_detail' %}" class="text-decoration-none text-muted">Your Cart</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <h6 class="text-white fw-bold mb-3">Popular Categories</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2">Chicken Specials</li>
+                        <li class="mb-2">Gourmet Burgers</li>
+                        <li class="mb-2">Artisanal Pizzas</li>
+                        <li class="mb-2">Exclusive Drinks</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="text-white fw-bold mb-3">Connect With Us</h6>
+                    <div class="d-flex gap-3 fs-5 mb-3 text-danger">
+                        <i class="fa-brands fa-instagram cursor-pointer"></i>
+                        <i class="fa-brands fa-twitter cursor-pointer"></i>
+                        <i class="fa-brands fa-facebook cursor-pointer"></i>
+                    </div>
+                    <p class="text-white small mb-0"><i class="fa-solid fa-phone me-2 text-danger"></i> +1 (800) CRAVEX-NOW</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-white fw-bold small">
+                &copy; 2026 CraveX Inc. All rights reserved. Premium Taste, Delivered Fast.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
