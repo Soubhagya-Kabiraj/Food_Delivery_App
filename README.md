@@ -11,7 +11,7 @@
 
 **CraveX** is a minimalist, luxury-themed food ordering platform inspired by high-end, premium quick-service dining. Unlike generic platforms cluttered with hundreds of average choices, CraveX focuses on a curated, exclusive selection of gourmet chicken buckets, artisanal pizzas, handcrafted burgers, premium mocktails, and decadent desserts.
 
-Built with **Django (MVT Architecture)** and a modern **Dark-Luxury UI Design System**, CraveX delivers a premium, fast, and highly interactive user experience..
+Built with **Django (MVT Architecture)** and a modern **Dark-Luxury UI Design System**, CraveX delivers a premium, fast, and highly interactive user experience.
 
 ---
 
